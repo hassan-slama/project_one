@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+
+import '../search.dart';
 class HomeScreen extends StatelessWidget{
+  int current = 0;
   List <String> categoryName = ["Milk","Vegetables","Meat","Sea Food","Eggs"];
   List <String> categoryImage = ["https://static5.depositphotos.com/1020804/534/i/450/depositphotos_5347226-stock-photo-splash-of-milk.jpg",
   "https://www.kindpng.com/picc/m/46-464150_vegetable-chicken-curry-food-fruit-vegetables-png-transparent.png",
@@ -19,6 +22,7 @@ class HomeScreen extends StatelessWidget{
     "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
     "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,12 +36,15 @@ class HomeScreen extends StatelessWidget{
           fontSize: 20,
         ),),
         actions: [
-          const Icon(Icons.search,color: Colors.white,size: 32,),
+           IconButton(icon: Icon(Icons.search), onPressed: (){
+             showSearch(context: context, delegate: Search());
+           }),
           const SizedBox(width: 16,),
           const Icon(Icons.shopping_cart_outlined,color: Colors.white,size: 32,),
           const SizedBox(width: 8,)
         ],
       ),
+      drawerScrimColor: Colors.transparent.withOpacity(0.75),
       drawer: Drawer(
 
           child: Container(
@@ -139,7 +146,10 @@ class HomeScreen extends StatelessWidget{
 
         child: BottomNavigationBar(
             selectedItemColor: Colors.red,
-            currentIndex: 0,
+            currentIndex: current,
+            onTap: (index){
+
+            },
             items: [
           const BottomNavigationBarItem(
             label: "Home",
@@ -283,208 +293,16 @@ class HomeScreen extends StatelessWidget{
                 );
                   }),
             )
-          // Wrap(
-          //   spacing: 20,
-          //   alignment: WrapAlignment.center,
-          //   direction: Axis.vertical,
-          //   children: [
-          //     Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: [
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //     Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: [
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //     Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: [
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //     Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: [
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //     Row(
-          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //       children: [
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //         Padding(
-          //           padding: const EdgeInsets.all(16),
-          //           child: Container(
-          //             width: 98,
-          //             height: 107,
-          //             decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               borderRadius: BorderRadius.circular(20),
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ],
-          // ),
+
 
         ],
       ),
     );
   }
+
+
+
+
 
 
 }
