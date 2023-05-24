@@ -22,37 +22,37 @@ class HomeScreen extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff171717),
+      backgroundColor: const Color(0xff171717),
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color(0xffA71E27),
-        title: Text("24 Express",style: TextStyle(
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xffA71E27),
+        title: const Text("24 Express",style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),),
         actions: [
-          Icon(Icons.search,color: Colors.white,size: 32,),
-          SizedBox(width: 16,),
-          Icon(Icons.shopping_cart_outlined,color: Colors.white,size: 32,),
-          SizedBox(width: 8,)
+          const Icon(Icons.search,color: Colors.white,size: 32,),
+          const SizedBox(width: 16,),
+          const Icon(Icons.shopping_cart_outlined,color: Colors.white,size: 32,),
+          const SizedBox(width: 8,)
         ],
       ),
       drawer: Drawer(
 
           child: Container(
-            color: Color(0xff171717),
+            color: const Color(0xff171717),
             child: ListView(
               children: [
                 DrawerHeader(
-                  padding: EdgeInsets.only(bottom: 0,top: 16,left: 16,right: 16),
-                  decoration: BoxDecoration(
+                  padding: const EdgeInsets.only(bottom: 0,top: 16,left: 16,right: 16),
+                  decoration: const BoxDecoration(
                     color: Color(0xffA71E27),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         backgroundColor: Color(0xff6B1319),
                         radius: 35,
                         child: Icon(Icons.person,color: Colors.white,size: 60,),
@@ -61,9 +61,9 @@ class HomeScreen extends StatelessWidget{
 
                       Row(
                         children: [
-                          Text("Hassan Slama",style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                          Spacer(),
-                          CircleAvatar(
+                          const Text("Hassan Slama",style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
+                          const Spacer(),
+                          const CircleAvatar(
                             backgroundColor: Color(0xff6B1319),
                             radius: 20,
                             child: Icon(Icons.edit,color: Colors.white,size: 20,)
@@ -71,14 +71,14 @@ class HomeScreen extends StatelessWidget{
                           ),
                         ],
                       ),
-                      Text("2023",style: TextStyle(
+                      const Text("2023",style: TextStyle(
                         color: Color(0xff6B1319),
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                       ),)
                     ],
                   ),),
-                ListTile(
+                const ListTile(
                   leading: Icon(Icons.home_outlined,color: Color(0xff707070),size: 32,),
                   title: Text("Home",style: TextStyle(
                     color: Colors.white,
@@ -86,7 +86,7 @@ class HomeScreen extends StatelessWidget{
                     fontWeight: FontWeight.bold,
                   ),),
                 ),
-                ListTile(
+                const ListTile(
                   leading: Icon(Icons.category_outlined,color: Color(0xff707070),size: 32,),
                   title: Text("Categories",style: TextStyle(
                     color: Colors.white,
@@ -94,7 +94,7 @@ class HomeScreen extends StatelessWidget{
                     fontWeight: FontWeight.bold,
                   ),),
                 ),
-                ListTile(
+                const ListTile(
                   leading: Icon(Icons.favorite_border,color: Color(0xff707070),size: 32,),
                   title: Text("Like",style: TextStyle(
                     color: Colors.white,
@@ -102,7 +102,7 @@ class HomeScreen extends StatelessWidget{
                     fontWeight: FontWeight.bold,
                   ),),
                 ),
-                ListTile(
+                const ListTile(
                   leading: Icon(Icons.shopping_cart_outlined,color: Color(0xff707070),size: 32,),
                   title: Text("Home",style: TextStyle(
                     color: Colors.white,
@@ -110,7 +110,7 @@ class HomeScreen extends StatelessWidget{
                     fontWeight: FontWeight.bold,
                   ),),
                 ),
-                ListTile(
+                const ListTile(
                   leading: Icon(Icons.language_outlined,color: Color(0xff707070),size: 32,),
                   title: Text("Langouage",style: TextStyle(
                     color: Colors.white,
@@ -118,7 +118,7 @@ class HomeScreen extends StatelessWidget{
                     fontWeight: FontWeight.bold,
                   ),),
                 ),
-                ListTile(
+                const ListTile(
                   leading: Icon(Icons.login_outlined,color: Color(0xff707070),size: 32,),
                   title: Text("Log Out",style: TextStyle(
                     color: Colors.white,
@@ -132,7 +132,7 @@ class HomeScreen extends StatelessWidget{
         
       ),
       bottomNavigationBar: ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topRight: Radius.circular(24),
           topLeft: Radius.circular(24),
         ),
@@ -141,43 +141,43 @@ class HomeScreen extends StatelessWidget{
             selectedItemColor: Colors.red,
             currentIndex: 0,
             items: [
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             label: "Home",
             icon: Icon(Icons.home),
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             label: "Categories",
             icon: Icon(Icons.category),
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             label: "Favourites",
             icon: Icon(Icons.favorite_border),
           ),
         ]),
       ),
       body: ListView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         children: [
-          Padding(padding: EdgeInsets.all(16),
+          Padding(padding: const EdgeInsets.all(16),
             child: Row(
 
               children: [
-                Icon(Icons.category,color: Colors.white,size: 24,),
-                SizedBox(width: 8,),
-                Text("Categories",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 20),),
-                Spacer(),
+                const Icon(Icons.category,color: Colors.white,size: 24,),
+                const SizedBox(width: 8,),
+                const Text("Categories",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 20),),
+                const Spacer(),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: Color(0xff8B8B8B),
+                    color: const Color(0xff8B8B8B),
                   ),
-                  child: Padding(padding: EdgeInsets.symmetric(horizontal: 10,vertical: 4),
+                  child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
                   child: Row(
 
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("see all",style: TextStyle(color: Colors.white,fontSize: 15),),
-                      Icon(Icons.arrow_forward_ios,color: Colors.white,size: 15,),
+                      const Text("see all",style: TextStyle(color: Colors.white,fontSize: 15),),
+                      const Icon(Icons.arrow_forward_ios,color: Colors.white,size: 15,),
                     ],
                   ),
                   ),
@@ -188,8 +188,8 @@ class HomeScreen extends StatelessWidget{
           ),
           SizedBox(height: 150,
           child: ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             scrollDirection: Axis.horizontal,
             itemCount: categoryName.length,
             itemBuilder: (context, index) {
@@ -203,8 +203,8 @@ class HomeScreen extends StatelessWidget{
                       backgroundImage: NetworkImage("${categoryImage[index]}"),
 
                     ),
-                    SizedBox(height: 10,),
-                    Text("${categoryName[index]}",style: TextStyle(color: Color(0xffC4C4C4),fontSize: 15,fontWeight: FontWeight.bold),)
+                    const SizedBox(height: 10,),
+                    Text("${categoryName[index]}",style: const TextStyle(color: Color(0xffC4C4C4),fontSize: 15,fontWeight: FontWeight.bold),)
                   ],
                 ),
               );
@@ -212,19 +212,19 @@ class HomeScreen extends StatelessWidget{
 
           ),
           ),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 8),
           child: Row(
             children: [
-              Icon(Icons.percent,color: Colors.white,size: 32,),
-              SizedBox(width: 8,),
-              Text("Offers",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
+              const Icon(Icons.percent,color: Colors.white,size: 32,),
+              const SizedBox(width: 8,),
+              const Text("Offers",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
             ],
           ),
           ),
           SizedBox(height: 160,
             child: ListView.builder(
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               scrollDirection: Axis.horizontal,
               itemCount: offers.length,
               itemBuilder: (context, index) {
@@ -249,25 +249,25 @@ class HomeScreen extends StatelessWidget{
 
             ),
           ),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 8),
             child: Row(
               children: [
-                Icon(Icons.percent,color: Colors.white,size: 32,),
-                SizedBox(width: 8,),
-                Text("Popular",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
+                const Icon(Icons.percent,color: Colors.white,size: 32,),
+                const SizedBox(width: 8,),
+                const Text("Popular",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
               ],
             ),
           ),
             Container(
               child: GridView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                   itemCount: popularProductsImage.length,
                   scrollDirection: Axis.vertical,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3,),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3,),
                   itemBuilder: (context,index){
                 return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16,vertical: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 20),
                 child: Container(
 
                   decoration: BoxDecoration(
