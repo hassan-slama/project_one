@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget{
         ),),
         actions: [
            IconButton(icon: Icon(Icons.search), onPressed: (){
-             showSearch(context: context, delegate: Search());
+             showSearch(context: context, delegate: Search()); 
            }),
           const SizedBox(width: 16,),
           const Icon(Icons.shopping_cart_outlined,color: Colors.white,size: 32,),

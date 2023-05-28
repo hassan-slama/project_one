@@ -7,9 +7,19 @@ import 'home_screen.dart';
 
 
 
-class SignIn extends StatelessWidget {
+class SignIn extends StatefulWidget {
   const SignIn({super.key});
 
+  @override
+  _SignInState createState() => _SignInState();
+
+}
+class _SignInState extends State<SignIn>{
+  bool isobsecured = true;
+@override
+  void initState() {
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,10 +71,15 @@ class SignIn extends StatelessWidget {
               height: 20,
             ),
             TextField(
-              obscureText: true,
+              obscureText: isobsecured,
               decoration: InputDecoration(
-                suffixIcon: const Icon(
-                  Icons.visibility_off,
+                suffixIcon:  IconButton(
+                  icon: isobsecured?Icon(Icons.visibility_off):Icon(Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      isobsecured =!isobsecured;
+                    });
+                  },
                 ),
                 hintText: "Enter your password",
                 labelText: "password",
