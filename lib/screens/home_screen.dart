@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-
+import 'package:project_one/screens/categories.dart';
+import 'package:project_one/screens/sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:developer';
 import '../search.dart';
 class HomeScreen extends StatelessWidget{
   int current = 0;
@@ -36,8 +41,8 @@ class HomeScreen extends StatelessWidget{
           fontSize: 20,
         ),),
         actions: [
-           IconButton(icon: Icon(Icons.search), onPressed: (){
-             showSearch(context: context, delegate: Search()); 
+           IconButton(icon: const Icon(Icons.search), onPressed: (){
+             showSearch(context: context, delegate: Search());
            }),
           const SizedBox(width: 16,),
           const Icon(Icons.shopping_cart_outlined,color: Colors.white,size: 32,),
@@ -119,15 +124,44 @@ class HomeScreen extends StatelessWidget{
                 ),
                 const ListTile(
                   leading: Icon(Icons.language_outlined,color: Color(0xff707070),size: 32,),
-                  title: Text("Langouage",style: TextStyle(
+                  title: Text("Language",style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),),
                 ),
-                const ListTile(
-                  leading: Icon(Icons.login_outlined,color: Color(0xff707070),size: 32,),
-                  title: Text("Log Out",style: TextStyle(
+                 ListTile(
+                  onTap: () async{
+                    final uri = Uri.parse("https://v-mesta.com/api/sign-out");
+
+                    var request = http.Request('DELETE', uri);
+                    final pref = await SharedPreferences.getInstance();
+                    final cachedToken = pref.getString('token');
+
+                    request.headers.addAll({
+                      "Content-Type": "application/json",
+                      "Authorization":"Bearer $cachedToken"
+                    });
+
+                    final response = await request.send();
+                    if(response.statusCode == 200){
+                      final String responseBody = await response.stream.bytesToString();
+                      final decodedResponseBody = json.decode(responseBody);
+                      if(decodedResponseBody['key']=="success"){
+                        pref.clear();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) => const SignIn(),
+                          ),
+                              (route) => false,
+                        );
+                      }
+                    }
+
+                  },
+                  leading: const Icon(Icons.login_outlined,color: Color(0xff707070),size: 32,),
+                  title: const Text("Log Out",style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -176,20 +210,27 @@ class HomeScreen extends StatelessWidget{
                 const SizedBox(width: 8,),
                 const Text("Categories",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 20),),
                 const Spacer(),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xff8B8B8B),
-                  ),
-                  child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
-                  child: Row(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Categories())
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color(0xff8B8B8B),
+                    ),
+                    child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
+                    child: Row(
 
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("see all",style: TextStyle(color: Colors.white,fontSize: 15),),
-                      const Icon(Icons.arrow_forward_ios,color: Colors.white,size: 15,),
-                    ],
-                  ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("see all",style: TextStyle(color: Colors.white,fontSize: 15),),
+                        const Icon(Icons.arrow_forward_ios,color: Colors.white,size: 15,),
+                      ],
+                    ),
+                    ),
                   ),
                 )
               ],

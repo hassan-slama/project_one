@@ -1,8 +1,14 @@
+
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:project_one/screens/change_password_confirmation.dart';
 import 'package:project_one/screens/sign_up.dart';
 import 'change_password.dart';
 import 'home_screen.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 
 
 
@@ -16,6 +22,9 @@ class SignIn extends StatefulWidget {
 }
 class _SignInState extends State<SignIn>{
   bool isobsecured = true;
+  bool isLoading = false ;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 @override
   void initState() {
     super.initState();
@@ -47,6 +56,7 @@ class _SignInState extends State<SignIn>{
               height: 40,
             ),
             TextField(
+              controller: _emailController,
                 decoration: InputDecoration(
                   hintText: "Enter your Email",
                   hintStyle: const TextStyle(
@@ -71,10 +81,11 @@ class _SignInState extends State<SignIn>{
               height: 20,
             ),
             TextField(
+              controller: _passwordController,
               obscureText: isobsecured,
               decoration: InputDecoration(
                 suffixIcon:  IconButton(
-                  icon: isobsecured?Icon(Icons.visibility_off):Icon(Icons.visibility),
+                  icon: isobsecured?const Icon(Icons.visibility_off):const Icon(Icons.visibility),
                   onPressed: () {
                     setState(() {
                       isobsecured =!isobsecured;
@@ -108,10 +119,10 @@ class _SignInState extends State<SignIn>{
                 child: TextButton(
                     onPressed: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return ChangePassword();
+                      return ChangePasswordConfirmstion();
                     },),);
                     },
-                    child:Text(
+                    child:const Text(
                   "Forget Password! ",
                   style: TextStyle(
                     fontSize: 10,
@@ -121,7 +132,12 @@ class _SignInState extends State<SignIn>{
             const SizedBox(
               height: 20,
             ),
+            isLoading
+                ?
+            CircularProgressIndicator()
+                :
             Container(
+              padding: EdgeInsets.symmetric(vertical: 15),
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 182, 48, 18),
@@ -133,13 +149,76 @@ class _SignInState extends State<SignIn>{
                       blurRadius: 15,
                     )
                   ]),
-              child:  TextButton(
-                  onPressed: (){
-                    Navigator.pushAndRemoveUntil(context,
-                        MaterialPageRoute(builder: (context)=> HomeScreen())
-                    , (route) => false);
+              child:
+
+              InkWell(
+
+                  onTap: ()async{
+                    isLoading =true;
+                    setState(() {});
+                    //call register api
+                    // prepare uri
+                    final uri = Uri.parse("https://v-mesta.com/api/sign-in");
+                    //initialize request
+                    var request = http.Request('POST',uri);
+                    // adding encoded json to the request body
+                    final body = json.encode({
+                      "email": _emailController.text,
+                      "password": _passwordController.text,
+                      "device_id": "111",
+                      "device_type": Platform.isIOS ? "ios" : "android",
+                    });
+                    print("request body is ::: $body");
+                    request.body = body;
+                    // adding headers to accept json format
+                    request.headers.addAll({
+                      "Content-Type": "application/json",
+                    });
+                    // send the request to the server
+                    var response = await request.send();
+                    // logging the status code
+                    log(response.statusCode.toString(),name: "status code");
+                    // check if the status code success
+                    if (response.statusCode == 200) {
+                      // receive the response body
+                      String responseBody = await response.stream.bytesToString();
+                      // logging response body
+                      log(responseBody,name: "response body");
+                      // decode response body to Map
+                      final decodedBody = json.decode(responseBody);
+                      log(decodedBody.toString(),name: " decoded response body");
+                      isLoading =false;
+                      setState(() {});
+                      if(decodedBody['key']=="success"){
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) => HomeScreen(),
+                          ),
+                              (route) => false,
+                        );
+                        // handle error stat
+                      } else if(decodedBody['key']=="fail"){
+                        showDialog(
+                            context: context,
+                            // barrierDismissible: false,
+                            builder: (ctx){
+                              return AlertDialog(
+                                title: Text("Error!"),
+                                content: Text(
+                                  decodedBody['msg'].toString(),
+                                ),
+                              );
+                            }
+                        );
+
+                      }else{
+                        print("error");
+                      }
+                    }
+                    // navigate to otp screen
                   },
-                  child: Text(
+                  child: const Text(
                     "SIGN IN",
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   )),
@@ -158,7 +237,7 @@ class _SignInState extends State<SignIn>{
                     onPressed: () {
                       Navigator.push(context,
                         MaterialPageRoute(builder:(context){
-                          return SignUp();
+                          return const SignUp();
                         },),
                       );
                     },

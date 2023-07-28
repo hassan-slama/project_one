@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:project_one/screens/change_password.dart';
+import 'package:project_one/screens/home_screen.dart';
 import 'package:project_one/screens/sign_in.dart';
 import 'package:project_one/screens/sign_up.dart';
-
-void main() {
+import 'package:shared_preferences/shared_preferences.dart';
+bool isLoggedIn = false;
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  final pref = await SharedPreferences.getInstance();
+  var token =  pref.getString('token');
+  print("token is $token");
+  isLoggedIn = token==null?false:true;
   runApp(const MyApp());
 }
 
@@ -19,22 +26,11 @@ class MyApp extends StatelessWidget {
 
         primarySwatch: Colors.grey,
       ),
-      home: Scaffold(
-            backgroundColor: Colors.white,
-        // appBar: AppBar(
-        //   backgroundColor: Colors.white,
-        //   title: const Text("My Shop"),
-        //   leading: const Icon(Icons.menu,size: 32,),
-        //   actions: const [
-        //     Icon(Icons.search,size: 40,color: Colors.grey,),
-        //     SizedBox(width: 20,),
-        //     // Icon(Icons.shopping_cart),
-        //     // SizedBox(width: 16,)
-        //   ],
-        // ),
-        body: SignIn(),
-
-        ),
+      home: isLoggedIn
+        ?
+        HomeScreen()
+        :
+    SignIn(),
     );
   }
 }
