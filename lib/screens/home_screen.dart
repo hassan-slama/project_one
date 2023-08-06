@@ -1,10 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_one/screens/categories.dart';
 import 'package:project_one/screens/sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'dart:developer';
 import '../search.dart';
 class HomeScreen extends StatelessWidget{
   int current = 0;
@@ -27,6 +27,8 @@ class HomeScreen extends StatelessWidget{
     "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
     "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
   ];
+
+  HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +74,10 @@ class HomeScreen extends StatelessWidget{
                       ),
 
                       Row(
-                        children: [
-                          const Text("Hassan Slama",style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                          const Spacer(),
-                          const CircleAvatar(
+                        children: const [
+                          Text("Hassan Slama",style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
+                          Spacer(),
+                          CircleAvatar(
                             backgroundColor: Color(0xff6B1319),
                             radius: 20,
                             child: Icon(Icons.edit,color: Colors.white,size: 20,)
@@ -131,35 +133,44 @@ class HomeScreen extends StatelessWidget{
                   ),),
                 ),
                  ListTile(
-                  onTap: () async{
-                    final uri = Uri.parse("https://v-mesta.com/api/sign-out");
-
-                    var request = http.Request('DELETE', uri);
-                    final pref = await SharedPreferences.getInstance();
-                    final cachedToken = pref.getString('token');
-
-                    request.headers.addAll({
-                      "Content-Type": "application/json",
-                      "Authorization":"Bearer $cachedToken"
-                    });
-
-                    final response = await request.send();
-                    if(response.statusCode == 200){
-                      final String responseBody = await response.stream.bytesToString();
-                      final decodedResponseBody = json.decode(responseBody);
-                      if(decodedResponseBody['key']=="success"){
-                        pref.clear();
-                        Navigator.pushAndRemoveUntil(
-                          context,
+                   onTap: ()async{
+                    await FirebaseAuth.instance.signOut().then((value) {
+                      Navigator.push(context,
                           MaterialPageRoute(
-                            builder: (builder) => const SignIn(),
-                          ),
-                              (route) => false,
-                        );
-                      }
-                    }
+                              builder: (builder)=>SignIn()
+                          ));
+                    });
+                   },
 
-                  },
+                  // onTap: () async{
+                  //   final uri = Uri.parse("https://v-mesta.com/api/sign-out");
+                  //
+                  //   var request = http.Request('DELETE', uri);
+                  //   final pref = await SharedPreferences.getInstance();
+                  //   final cachedToken = pref.getString('token');
+                  //
+                  //   request.headers.addAll({
+                  //     "Content-Type": "application/json",
+                  //     "Authorization":"Bearer $cachedToken"
+                  //   });
+                  //
+                  //   final response = await request.send();
+                  //   if(response.statusCode == 200){
+                  //     final String responseBody = await response.stream.bytesToString();
+                  //     final decodedResponseBody = json.decode(responseBody);
+                  //     if(decodedResponseBody['key']=="success"){
+                  //       pref.clear();
+                  //       Navigator.pushAndRemoveUntil(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //           builder: (builder) => const SignIn(),
+                  //         ),
+                  //             (route) => false,
+                  //       );
+                  //     }
+                  //   }
+                  //
+                  // },
                   leading: const Icon(Icons.login_outlined,color: Color(0xff707070),size: 32,),
                   title: const Text("Log Out",style: TextStyle(
                     color: Colors.white,
@@ -184,16 +195,16 @@ class HomeScreen extends StatelessWidget{
             onTap: (index){
 
             },
-            items: [
-          const BottomNavigationBarItem(
+            items: const [
+          BottomNavigationBarItem(
             label: "Home",
             icon: Icon(Icons.home),
           ),
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(
             label: "Categories",
             icon: Icon(Icons.category),
           ),
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(
             label: "Favourites",
             icon: Icon(Icons.favorite_border),
           ),
@@ -213,7 +224,7 @@ class HomeScreen extends StatelessWidget{
                 GestureDetector(
                   onTap: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Categories())
+                        MaterialPageRoute(builder: (context) => const Categories())
                     );
                   },
                   child: Container(
@@ -225,9 +236,9 @@ class HomeScreen extends StatelessWidget{
                     child: Row(
 
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text("see all",style: TextStyle(color: Colors.white,fontSize: 15),),
-                        const Icon(Icons.arrow_forward_ios,color: Colors.white,size: 15,),
+                      children: const [
+                        Text("see all",style: TextStyle(color: Colors.white,fontSize: 15),),
+                        Icon(Icons.arrow_forward_ios,color: Colors.white,size: 15,),
                       ],
                     ),
                     ),
@@ -251,11 +262,11 @@ class HomeScreen extends StatelessWidget{
                   children: [
                     CircleAvatar(
                       radius: 58,
-                      backgroundImage: NetworkImage("${categoryImage[index]}"),
+                      backgroundImage: NetworkImage(categoryImage[index]),
 
                     ),
                     const SizedBox(height: 10,),
-                    Text("${categoryName[index]}",style: const TextStyle(color: Color(0xffC4C4C4),fontSize: 15,fontWeight: FontWeight.bold),)
+                    Text(categoryName[index],style: const TextStyle(color: Color(0xffC4C4C4),fontSize: 15,fontWeight: FontWeight.bold),)
                   ],
                 ),
               );
@@ -265,10 +276,10 @@ class HomeScreen extends StatelessWidget{
           ),
           Padding(padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 8),
           child: Row(
-            children: [
-              const Icon(Icons.percent,color: Colors.white,size: 32,),
-              const SizedBox(width: 8,),
-              const Text("Offers",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
+            children: const [
+              Icon(Icons.percent,color: Colors.white,size: 32,),
+              SizedBox(width: 8,),
+              Text("Offers",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
             ],
           ),
           ),
@@ -288,7 +299,7 @@ class HomeScreen extends StatelessWidget{
                     height: 148,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage("${offers[index]}"),
+                        image: NetworkImage(offers[index]),
                         fit: BoxFit.cover,
                       ),
                       color: Colors.red,
@@ -302,10 +313,10 @@ class HomeScreen extends StatelessWidget{
           ),
           Padding(padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 8),
             child: Row(
-              children: [
-                const Icon(Icons.percent,color: Colors.white,size: 32,),
-                const SizedBox(width: 8,),
-                const Text("Popular",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
+              children: const [
+                Icon(Icons.percent,color: Colors.white,size: 32,),
+                SizedBox(width: 8,),
+                Text("Popular",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 20),),
               ],
             ),
           ),
@@ -323,7 +334,7 @@ class HomeScreen extends StatelessWidget{
 
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage("${popularProductsImage[index]}"),
+                      image: NetworkImage(popularProductsImage[index]),
                       fit: BoxFit.cover
                     ),
 

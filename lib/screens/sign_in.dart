@@ -1,7 +1,9 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:project_one/screens/change_password_confirmation.dart';
+import 'package:project_one/screens/servicies/firebase_auth.dart';
 import 'package:project_one/screens/sign_up.dart';
 import 'change_password.dart';
 import 'home_screen.dart';
@@ -25,6 +27,7 @@ class _SignInState extends State<SignIn>{
   bool isLoading = false ;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  String? errorMessage;
 @override
   void initState() {
     super.initState();
@@ -55,6 +58,9 @@ class _SignInState extends State<SignIn>{
             const SizedBox(
               height: 40,
             ),
+            errorMessage != null? Text("$errorMessage",style: TextStyle(fontSize: 20,color: Colors.red),)
+                :SizedBox(),
+            SizedBox(height: 20,),
             TextField(
               controller: _emailController,
                 decoration: InputDecoration(
@@ -152,72 +158,94 @@ class _SignInState extends State<SignIn>{
               child:
 
               InkWell(
+                    onTap: ()async{
+                      FirebaseAuthService.SignIn(email: _emailController.text, password: _passwordController.text)
+                          .then(
+                            (credential){
 
-                  onTap: ()async{
-                    isLoading =true;
-                    setState(() {});
-                    //call register api
-                    // prepare uri
-                    final uri = Uri.parse("https://v-mesta.com/api/sign-in");
-                    //initialize request
-                    var request = http.Request('POST',uri);
-                    // adding encoded json to the request body
-                    final body = json.encode({
-                      "email": _emailController.text,
-                      "password": _passwordController.text,
-                      "device_id": "111",
-                      "device_type": Platform.isIOS ? "ios" : "android",
-                    });
-                    print("request body is ::: $body");
-                    request.body = body;
-                    // adding headers to accept json format
-                    request.headers.addAll({
-                      "Content-Type": "application/json",
-                    });
-                    // send the request to the server
-                    var response = await request.send();
-                    // logging the status code
-                    log(response.statusCode.toString(),name: "status code");
-                    // check if the status code success
-                    if (response.statusCode == 200) {
-                      // receive the response body
-                      String responseBody = await response.stream.bytesToString();
-                      // logging response body
-                      log(responseBody,name: "response body");
-                      // decode response body to Map
-                      final decodedBody = json.decode(responseBody);
-                      log(decodedBody.toString(),name: " decoded response body");
-                      isLoading =false;
-                      setState(() {});
-                      if(decodedBody['key']=="success"){
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (builder) => HomeScreen(),
-                          ),
-                              (route) => false,
-                        );
-                        // handle error stat
-                      } else if(decodedBody['key']=="fail"){
-                        showDialog(
-                            context: context,
-                            // barrierDismissible: false,
-                            builder: (ctx){
-                              return AlertDialog(
-                                title: Text("Error!"),
-                                content: Text(
-                                  decodedBody['msg'].toString(),
-                                ),
-                              );
+                              Navigator.push(context,
+                              MaterialPageRoute(
+                              builder: (builder)=>HomeScreen()
+                              ));
+
+                            },
+                          onError: (error){
+                            if(error is FirebaseAuthException){
+                              errorMessage = error.code;
+                            }else{
+                              errorMessage = error.toString();
                             }
-                        );
+                            setState(() {
 
-                      }else{
-                        print("error");
-                      }
-                    }
-                    // navigate to otp screen
-                  },
+                            });
+                          }
+                      );
+                    },
+                  // onTap: ()async{
+                  //   isLoading =true;
+                  //   setState(() {});
+                  //   //call register api
+                  //   // prepare uri
+                  //   final uri = Uri.parse("https://v-mesta.com/api/sign-in");
+                  //   //initialize request
+                  //   var request = http.Request('POST',uri);
+                  //   // adding encoded json to the request body
+                  //   final body = json.encode({
+                  //     "email": _emailController.text,
+                  //     "password": _passwordController.text,
+                  //     "device_id": "111",
+                  //     "device_type": Platform.isIOS ? "ios" : "android",
+                  //   });
+                  //   print("request body is ::: $body");
+                  //   request.body = body;
+                  //   // adding headers to accept json format
+                  //   request.headers.addAll({
+                  //     "Content-Type": "application/json",
+                  //   });
+                  //   // send the request to the server
+                  //   var response = await request.send();
+                  //   // logging the status code
+                  //   log(response.statusCode.toString(),name: "status code");
+                  //   // check if the status code success
+                  //   if (response.statusCode == 200) {
+                  //     // receive the response body
+                  //     String responseBody = await response.stream.bytesToString();
+                  //     // logging response body
+                  //     log(responseBody,name: "response body");
+                  //     // decode response body to Map
+                  //     final decodedBody = json.decode(responseBody);
+                  //     log(decodedBody.toString(),name: " decoded response body");
+                  //     isLoading =false;
+                  //     setState(() {});
+                  //     if(decodedBody['key']=="success"){
+                  //       Navigator.pushAndRemoveUntil(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //           builder: (builder) => HomeScreen(),
+                  //         ),
+                  //             (route) => false,
+                  //       );
+                  //       // handle error stat
+                  //     } else if(decodedBody['key']=="fail"){
+                  //       showDialog(
+                  //           context: context,
+                  //           // barrierDismissible: false,
+                  //           builder: (ctx){
+                  //             return AlertDialog(
+                  //               title: Text("Error!"),
+                  //               content: Text(
+                  //                 decodedBody['msg'].toString(),
+                  //               ),
+                  //             );
+                  //           }
+                  //       );
+                  //
+                  //     }else{
+                  //       print("error");
+                  //     }
+                  //   }
+                  //   // navigate to otp screen
+                  // },
                   child: const Text(
                     "SIGN IN",
                     style: TextStyle(color: Colors.white, fontSize: 20),

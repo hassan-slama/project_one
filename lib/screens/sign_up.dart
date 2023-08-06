@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:project_one/screens/servicies/firebase_auth.dart';
 
+import 'home_screen.dart';
 import 'otp_screen.dart';
 
 
@@ -22,7 +26,7 @@ class _SignUpState extends State<SignUp> {
   final _confirmPasswordController = TextEditingController();
   final _emailController = TextEditingController();
   bool isLoading = false;
-
+  String? errorMessage;
   @override
   Widget build(BuildContext context) {
 
@@ -61,6 +65,10 @@ class _SignUpState extends State<SignUp> {
                 const SizedBox(
                   height: 40,
                 ),
+
+                errorMessage != null? Text("$errorMessage",style: TextStyle(fontSize: 20,color: Colors.red),)
+                    :SizedBox(),
+                SizedBox(height: 20,),
                 TextField(
                   controller: _nameController,
                     decoration: InputDecoration(
@@ -210,72 +218,99 @@ class _SignUpState extends State<SignUp> {
                           :
                       InkWell(
                         onTap: ()async{
-                          isLoading =true;
-                          setState(() {});
-                          //call register api
-                          // prepare uri
-                          final uri = Uri.parse("https://v-mesta.com/api/sign-up");
-                          //initialize request
-                          var request = http.Request('POST',uri);
-                          // adding encoded json to the request body
-                          final body = json.encode({
-                            "name": _nameController.text,
-                            "country_code":966 ,
-                            "phone":_phoneController.text ,
-                            "email": _emailController.text,
-                            "password": _passwordController.text,
-                            "password_confirmation": _confirmPasswordController.text,
-                            "d_o_b": '13-10-2001',
-                          });
-                          print("request body is ::: $body");
-                          request.body = body;
-                          // adding headers to accept json format
-                          request.headers.addAll({
-                            "Content-Type": "application/json",
-                          });
-                          // send the request to the server
-                          var response = await request.send();
-                          // logging the status code
-                          log(response.statusCode.toString(),name: "status code");
-                          // check if the status code success
-                          if (response.statusCode == 200) {
-                            // receive the response body
-                            String responseBody = await response.stream.bytesToString();
-                            // logging response body
-                            log(responseBody,name: "response body");
-                            // decode response body to Map
-                            final decodedBody = json.decode(responseBody);
-                            log(decodedBody.toString(),name: " decoded response body");
-                            isLoading =false;
-                            setState(() {});
-                            if(decodedBody['key']=="needActive"){
-                              Navigator.push(context,
-                                  MaterialPageRoute(
-                                      builder: (builder)=>OtpScreen(
-                                        email:_emailController.text,
-                                      )
-                                  ));
-                              // handle error stat
-                            } else if(decodedBody['key']=="fail"){
-                              showDialog(
-                                  context: context,
-                                  // barrierDismissible: false,
-                                  builder: (ctx){
-                                    return AlertDialog(
-                                      title: Text("Error!"),
-                                      content: Text(
-                                        decodedBody['msg'].toString(),
-                                      ),
-                                    );
-                                  }
-                              );
+                          FirebaseAuthService.SignUp(
+                              email: _emailController.text,
+                              password: _passwordController.text)
+                              .then(
+                                  (credential){
+                                    FirebaseFirestore.instance.collection("users").doc(credential.user?.uid);
+                                    Navigator.push(context,
+                                        MaterialPageRoute(
+                                            builder: (builder)=>HomeScreen()
+                                        ));
+                                  },
+                            onError: (error){
+                                    if(error is FirebaseAuthException){
+                                      errorMessage = error.code;
+                                    }else{
+                                      errorMessage = error.toString();
+                                    }
+                                    setState(() {
 
-                            }else{
-                              print("error");
+                                    });
                             }
-                          }
-                          // navigate to otp screen
+
+
+                          );
+
                         },
+                        // onTap: ()async{
+                        //   isLoading =true;
+                        //   setState(() {});
+                        //   //call register api
+                        //   // prepare uri
+                        //   final uri = Uri.parse("https://v-mesta.com/api/sign-up");
+                        //   //initialize request
+                        //   var request = http.Request('POST',uri);
+                        //   // adding encoded json to the request body
+                        //   final body = json.encode({
+                        //     "name": _nameController.text,
+                        //     "country_code":966 ,
+                        //     "phone":_phoneController.text ,
+                        //     "email": _emailController.text,
+                        //     "password": _passwordController.text,
+                        //     "password_confirmation": _confirmPasswordController.text,
+                        //     "d_o_b": '13-10-2001',
+                        //   });
+                        //   print("request body is ::: $body");
+                        //   request.body = body;
+                        //   // adding headers to accept json format
+                        //   request.headers.addAll({
+                        //     "Content-Type": "application/json",
+                        //   });
+                        //   // send the request to the server
+                        //   var response = await request.send();
+                        //   // logging the status code
+                        //   log(response.statusCode.toString(),name: "status code");
+                        //   // check if the status code success
+                        //   if (response.statusCode == 200) {
+                        //     // receive the response body
+                        //     String responseBody = await response.stream.bytesToString();
+                        //     // logging response body
+                        //     log(responseBody,name: "response body");
+                        //     // decode response body to Map
+                        //     final decodedBody = json.decode(responseBody);
+                        //     log(decodedBody.toString(),name: " decoded response body");
+                        //     isLoading =false;
+                        //     setState(() {});
+                        //     if(decodedBody['key']=="needActive"){
+                        //       Navigator.push(context,
+                        //           MaterialPageRoute(
+                        //               builder: (builder)=>OtpScreen(
+                        //                 email:_emailController.text,
+                        //               )
+                        //           ));
+                        //       // handle error stat
+                        //     } else if(decodedBody['key']=="fail"){
+                        //       showDialog(
+                        //           context: context,
+                        //           // barrierDismissible: false,
+                        //           builder: (ctx){
+                        //             return AlertDialog(
+                        //               title: Text("Error!"),
+                        //               content: Text(
+                        //                 decodedBody['msg'].toString(),
+                        //               ),
+                        //             );
+                        //           }
+                        //       );
+                        //
+                        //     }else{
+                        //       print("error");
+                        //     }
+                        //   }
+                        //   // navigate to otp screen
+                        // },
                         child: Container(
                           height: 44,
                           width: 101,
