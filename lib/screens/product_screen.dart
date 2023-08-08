@@ -18,6 +18,7 @@ class _ProductScreenState extends State<ProductScreen> {
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xffA71E27),
+       
         title: const Text(
           "Milk",
           style: TextStyle(

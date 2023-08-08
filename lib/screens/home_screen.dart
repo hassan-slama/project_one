@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_one/screens/categories.dart';
@@ -6,17 +7,31 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../search.dart';
-class HomeScreen extends StatelessWidget{
+import 'drawer_screen.dart';
+import 'models/user_model.dart';
+class HomeScreen extends StatefulWidget{
+
+  HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   int current = 0;
+
   List <String> categoryName = ["Milk","Vegetables","Meat","Sea Food","Eggs"];
+
   List <String> categoryImage = ["https://static5.depositphotos.com/1020804/534/i/450/depositphotos_5347226-stock-photo-splash-of-milk.jpg",
   "https://www.kindpng.com/picc/m/46-464150_vegetable-chicken-curry-food-fruit-vegetables-png-transparent.png",
   "https://www.kindpng.com/picc/m/139-1392294_veal-raw-meats-hd-png-download.png",
   "https://www.kindpng.com/picc/m/428-4285266_sea-food-in-pakistan-png-download-mumbai-bhaucha.png",
   "https://www.kindpng.com/picc/m/69-698063_egg-png-transparent-png.png",
   ];
+
   List <String> offers = ["https://www.gitsfood.com/wp-content/uploads/2021/11/Complete-Snackmix-Combo-600x600.jpg",
     "https://www.gitsfood.com/wp-content/uploads/2021/11/Complete-Snackmix-Combo-600x600.jpg"];
+
   List <String> popularProductsImage =[
     "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
     "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
@@ -28,7 +43,21 @@ class HomeScreen extends StatelessWidget{
     "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
   ];
 
-  HomeScreen({super.key});
+  final userModel = UserModel();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser?.uid).
+    get().then((value) {
+      userModel.name  = value.data()?['name'];
+      userModel.phone  = value.data()?['phone'];
+      userModel.email  = value.data()?['email'];
+      userModel.id  = value.data()?['id'];
+      userModel.image  = value.data()?['image'];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,137 +81,7 @@ class HomeScreen extends StatelessWidget{
         ],
       ),
       drawerScrimColor: Colors.transparent.withOpacity(0.75),
-      drawer: Drawer(
-
-          child: Container(
-            color: const Color(0xff171717),
-            child: ListView(
-              children: [
-                DrawerHeader(
-                  padding: const EdgeInsets.only(bottom: 0,top: 16,left: 16,right: 16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xffA71E27),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const CircleAvatar(
-                        backgroundColor: Color(0xff6B1319),
-                        radius: 35,
-                        child: Icon(Icons.person,color: Colors.white,size: 60,),
-
-                      ),
-
-                      Row(
-                        children: const [
-                          Text("Hassan Slama",style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                          Spacer(),
-                          CircleAvatar(
-                            backgroundColor: Color(0xff6B1319),
-                            radius: 20,
-                            child: Icon(Icons.edit,color: Colors.white,size: 20,)
-                            ,
-                          ),
-                        ],
-                      ),
-                      const Text("2023",style: TextStyle(
-                        color: Color(0xff6B1319),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),)
-                    ],
-                  ),),
-                const ListTile(
-                  leading: Icon(Icons.home_outlined,color: Color(0xff707070),size: 32,),
-                  title: Text("Home",style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.category_outlined,color: Color(0xff707070),size: 32,),
-                  title: Text("Categories",style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.favorite_border,color: Color(0xff707070),size: 32,),
-                  title: Text("Like",style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.shopping_cart_outlined,color: Color(0xff707070),size: 32,),
-                  title: Text("Home",style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.language_outlined,color: Color(0xff707070),size: 32,),
-                  title: Text("Language",style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                ),
-                 ListTile(
-                   onTap: ()async{
-                    await FirebaseAuth.instance.signOut().then((value) {
-                      Navigator.push(context,
-                          MaterialPageRoute(
-                              builder: (builder)=>SignIn()
-                          ));
-                    });
-                   },
-
-                  // onTap: () async{
-                  //   final uri = Uri.parse("https://v-mesta.com/api/sign-out");
-                  //
-                  //   var request = http.Request('DELETE', uri);
-                  //   final pref = await SharedPreferences.getInstance();
-                  //   final cachedToken = pref.getString('token');
-                  //
-                  //   request.headers.addAll({
-                  //     "Content-Type": "application/json",
-                  //     "Authorization":"Bearer $cachedToken"
-                  //   });
-                  //
-                  //   final response = await request.send();
-                  //   if(response.statusCode == 200){
-                  //     final String responseBody = await response.stream.bytesToString();
-                  //     final decodedResponseBody = json.decode(responseBody);
-                  //     if(decodedResponseBody['key']=="success"){
-                  //       pref.clear();
-                  //       Navigator.pushAndRemoveUntil(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //           builder: (builder) => const SignIn(),
-                  //         ),
-                  //             (route) => false,
-                  //       );
-                  //     }
-                  //   }
-                  //
-                  // },
-                  leading: const Icon(Icons.login_outlined,color: Color(0xff707070),size: 32,),
-                  title: const Text("Log Out",style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),),
-                ),
-              ],
-            ),
-          ),
-        
-      ),
+      drawer: DrawerScreen(userModel: userModel,),
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(24),
@@ -351,10 +250,4 @@ class HomeScreen extends StatelessWidget{
       ),
     );
   }
-
-
-
-
-
-
 }

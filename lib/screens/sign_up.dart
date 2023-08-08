@@ -218,16 +218,27 @@ class _SignUpState extends State<SignUp> {
                           :
                       InkWell(
                         onTap: ()async{
+                          setState(() {
+                            isLoading = true;
+                          });
                           FirebaseAuthService.SignUp(
                               email: _emailController.text,
-                              password: _passwordController.text)
+                              password: _passwordController.text,
+                            phone: _phoneController.text,
+                            name: _nameController.text
+                          )
                               .then(
+
                                   (credential){
                                     FirebaseFirestore.instance.collection("users").doc(credential.user?.uid);
                                     Navigator.push(context,
                                         MaterialPageRoute(
                                             builder: (builder)=>HomeScreen()
+
                                         ));
+                                    setState(() {
+                                      isLoading = false;
+                                    });
                                   },
                             onError: (error){
                                     if(error is FirebaseAuthException){
@@ -235,9 +246,7 @@ class _SignUpState extends State<SignUp> {
                                     }else{
                                       errorMessage = error.toString();
                                     }
-                                    setState(() {
-
-                                    });
+                                    setState(() {});
                             }
 
 

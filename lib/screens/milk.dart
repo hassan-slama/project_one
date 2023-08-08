@@ -49,12 +49,11 @@ class _MilkState extends State<Milk> {
       body: ListView(physics: const BouncingScrollPhysics(), children: [
         InkWell(
           onTap: () {
-            Navigator.pushAndRemoveUntil(
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (builder) => ProductScreen(),
               ),
-                  (route) => false,
             );
           },
           child: ListView.builder(

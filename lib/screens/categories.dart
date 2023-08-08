@@ -12,6 +12,14 @@ class Categories extends StatefulWidget {
 }
 
 class _CategoriesState extends State<Categories> {
+  List <String> categoryName = ["Milk","Vegetables","Meat","Sea Food","Eggs"];
+
+  List <String> categoryImage = ["https://static5.depositphotos.com/1020804/534/i/450/depositphotos_5347226-stock-photo-splash-of-milk.jpg",
+    "https://www.kindpng.com/picc/m/46-464150_vegetable-chicken-curry-food-fruit-vegetables-png-transparent.png",
+    "https://www.kindpng.com/picc/m/139-1392294_veal-raw-meats-hd-png-download.png",
+    "https://www.kindpng.com/picc/m/428-4285266_sea-food-in-pakistan-png-download-mumbai-bhaucha.png",
+    "https://www.kindpng.com/picc/m/69-698063_egg-png-transparent-png.png",
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +48,7 @@ class _CategoriesState extends State<Categories> {
               child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: HomeScreen().categoryImage.length,
+                  itemCount: categoryImage.length,
                   scrollDirection: Axis.vertical,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,),
                   itemBuilder: (context,index){
@@ -59,10 +67,10 @@ class _CategoriesState extends State<Categories> {
                         child: Column(
                           children: [
 
-                            Image.network("${HomeScreen().categoryImage[index]}",
+                            Image.network("${categoryImage[index]}",
                               height: 150,width: 170,),
                             Container(
-                              child: Text("${HomeScreen().categoryName[index]}",
+                              child: Text("${categoryName[index]}",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold
