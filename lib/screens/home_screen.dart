@@ -2,16 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_one/screens/categories.dart';
-import 'package:project_one/screens/sign_in.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+// import 'package:project_one/screens/sign_in.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'dart:convert';
 import '../search.dart';
+import 'category_products.dart';
 import 'drawer_screen.dart';
 import 'models/user_model.dart';
 class HomeScreen extends StatefulWidget{
 
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,28 +21,10 @@ class HomeScreen extends StatefulWidget{
 class _HomeScreenState extends State<HomeScreen> {
   int current = 0;
 
-  List <String> categoryName = ["Milk","Vegetables","Meat","Sea Food","Eggs"];
-
-  List <String> categoryImage = ["https://static5.depositphotos.com/1020804/534/i/450/depositphotos_5347226-stock-photo-splash-of-milk.jpg",
-  "https://www.kindpng.com/picc/m/46-464150_vegetable-chicken-curry-food-fruit-vegetables-png-transparent.png",
-  "https://www.kindpng.com/picc/m/139-1392294_veal-raw-meats-hd-png-download.png",
-  "https://www.kindpng.com/picc/m/428-4285266_sea-food-in-pakistan-png-download-mumbai-bhaucha.png",
-  "https://www.kindpng.com/picc/m/69-698063_egg-png-transparent-png.png",
-  ];
 
   List <String> offers = ["https://www.gitsfood.com/wp-content/uploads/2021/11/Complete-Snackmix-Combo-600x600.jpg",
     "https://www.gitsfood.com/wp-content/uploads/2021/11/Complete-Snackmix-Combo-600x600.jpg"];
 
-  List <String> popularProductsImage =[
-    "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
-    "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
-    "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
-    "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
-    "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
-    "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
-    "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
-    "https://www.thecookierookie.com/wp-content/uploads/2023/04/stovetop-burgers-recipe-2-960x1200.jpg",
-  ];
 
   final userModel = UserModel();
 
@@ -92,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedItemColor: Colors.red,
             currentIndex: current,
             onTap: (index){
-
+              current = index;
             },
             items: const [
           BottomNavigationBarItem(
@@ -147,32 +130,67 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
           ),
-          SizedBox(height: 150,
-          child: ListView.builder(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            scrollDirection: Axis.horizontal,
-            itemCount: categoryName.length,
-            itemBuilder: (context, index) {
+         FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+             future: FirebaseFirestore.instance.collection("categories").get(),
+             builder: (context, snapshot) {
+               switch (snapshot.connectionState) {
+                 case ConnectionState.none:
+                   return Text("none");
+                 case ConnectionState.waiting:
+                   return Center(
+                     child: CircularProgressIndicator(),
+                   );
+                 case ConnectionState.active:
+                   return Center(
+                     child: CircularProgressIndicator(),
+                   );
+                 case ConnectionState.done:
+                  return SizedBox(height: 150,
+                     child: ListView.builder(
+                       physics: const BouncingScrollPhysics(),
+                       padding: const EdgeInsets.symmetric(horizontal: 8),
+                       scrollDirection: Axis.horizontal,
+                       itemCount: snapshot.data?.docs.length,
+                       itemBuilder: (context, index) {
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 58,
-                      backgroundImage: NetworkImage(categoryImage[index]),
+                         return InkWell(
+                           onTap: (){
+                             Navigator.push(context,
+                                 MaterialPageRoute(builder: (context) => CategoryProducts(
+                                   categoryID: snapshot.data?.docs[index]['id'],
+                                   categoryName: snapshot.data?.docs[index]['name'],
+                                 )
+                                 )
+                             );
+                           },
+                           child: Column(
+                             children: [
+                               Padding(
+                                 padding: const EdgeInsets.symmetric(horizontal: 16),
+                                 child: Column(
+                                   children: [
+                                     CircleAvatar(
+                                       radius: 58,
+                                       backgroundImage: NetworkImage(snapshot.data?.docs[index]["image"]),
 
-                    ),
-                    const SizedBox(height: 10,),
-                    Text(categoryName[index],style: const TextStyle(color: Color(0xffC4C4C4),fontSize: 15,fontWeight: FontWeight.bold),)
-                  ],
-                ),
-              );
-            },
+                                     ),
+                                     const SizedBox(height: 10,),
+                                     Text(snapshot.data?.docs[index]["name"],style: const TextStyle(color: Color(0xffC4C4C4),fontSize: 15,fontWeight: FontWeight.bold),)
+                                   ],
+                                 ),
+                               ),
+                             ],
+                           ),
+                         );
+                       },
 
-          ),
-          ),
+                     ),
+                   );
+               }
+             }
+
+         ),
+
           Padding(padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 8),
           child: Row(
             children: const [
@@ -182,34 +200,55 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           ),
-          SizedBox(height: 160,
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              scrollDirection: Axis.horizontal,
-              itemCount: offers.length,
-              itemBuilder: (context, index) {
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
+          FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              future: FirebaseFirestore.instance.collection("products").where('has_offer',isEqualTo: true).get(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                    return Text("none");
+                  case ConnectionState.waiting:
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  case ConnectionState.active:
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  case ConnectionState.done:
+                    return  SizedBox(height: 160,
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: snapshot.data?.docs.length,
+                        itemBuilder: (context, index) {
 
-                    width: 290,
-                    height: 148,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(offers[index]),
-                        fit: BoxFit.cover,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Container(
+
+                              width: 290,
+                              height: 148,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: NetworkImage(snapshot.data?.docs[index]['image']),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(20)
+                              ),
+                            ),
+                          );
+                        },
+
                       ),
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(20)
-                    ),
-                  ),
-                );
-              },
+                    );
+                }
+              }
 
-            ),
           ),
+
           Padding(padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 8),
             child: Row(
               children: const [
@@ -219,31 +258,78 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-            Container(
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                  itemCount: popularProductsImage.length,
-                  scrollDirection: Axis.vertical,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3,),
-                  itemBuilder: (context,index){
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 20),
-                child: Container(
+          FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              future: FirebaseFirestore.instance.collection("products").where('cart_count', isGreaterThan: 10).get(),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                    return Text("none");
+                  case ConnectionState.waiting:
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  case ConnectionState.active:
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  case ConnectionState.done:
+                    return GridView.builder(
+                      padding: EdgeInsets.all(16),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: snapshot.data?.docs.length,
+                        scrollDirection: Axis.vertical,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                        mainAxisSpacing: 16,
+                          crossAxisSpacing: 16
+                        ),
+                        itemBuilder: (context,index){
+                          return ClipRRect(
+                            borderRadius:  BorderRadius.circular(15),
+                            child: Container(
+                              color: Colors.white,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Image.network(
+                                      snapshot.data?.docs[index]['image'],
+                                      fit: BoxFit.fill,width: double.maxFinite,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text("${snapshot.data?.docs[index]['name']}",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15
+                                          ),),
+                                        Text("${snapshot.data?.docs[index]['price']} LE",style:
+                                        const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xffA71E27),
 
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(popularProductsImage[index]),
-                      fit: BoxFit.cover
-                    ),
+                                        ),),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        });
 
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                );
-                  }),
-            )
+                }
+              }
+
+          ),
+
 
 
         ],
