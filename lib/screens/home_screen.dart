@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_one/screens/categories.dart';
+import 'package:project_one/screens/product_details.dart';
 // import 'package:project_one/screens/sign_in.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:shared_preferences/shared_preferences.dart';
 // import 'dart:convert';
-import '../search.dart';
+// import '../search.dart';
+import 'appbar.dart';
 import 'category_products.dart';
 import 'drawer_screen.dart';
 import 'models/user_model.dart';
@@ -22,8 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int current = 0;
 
 
-  List <String> offers = ["https://www.gitsfood.com/wp-content/uploads/2021/11/Complete-Snackmix-Combo-600x600.jpg",
-    "https://www.gitsfood.com/wp-content/uploads/2021/11/Complete-Snackmix-Combo-600x600.jpg"];
 
 
   final userModel = UserModel();
@@ -46,22 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff171717),
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: const Color(0xffA71E27),
-        title: const Text("24 Express",style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),),
-        actions: [
-           IconButton(icon: const Icon(Icons.search), onPressed: (){
-             showSearch(context: context, delegate: Search());
-           }),
-          const SizedBox(width: 16,),
-          const Icon(Icons.shopping_cart_outlined,color: Colors.white,size: 32,),
-          const SizedBox(width: 8,)
-        ],
+      appBar: const CustomAppBarWidget(
+        title: '24Express',
       ),
       drawerScrimColor: Colors.transparent.withOpacity(0.75),
       drawer: DrawerScreen(userModel: userModel,),
@@ -135,13 +121,13 @@ class _HomeScreenState extends State<HomeScreen> {
              builder: (context, snapshot) {
                switch (snapshot.connectionState) {
                  case ConnectionState.none:
-                   return Text("none");
+                   return const Text("none");
                  case ConnectionState.waiting:
-                   return Center(
+                   return const Center(
                      child: CircularProgressIndicator(),
                    );
                  case ConnectionState.active:
-                   return Center(
+                   return const Center(
                      child: CircularProgressIndicator(),
                    );
                  case ConnectionState.done:
@@ -206,13 +192,13 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
-                    return Text("none");
+                    return const Text("none");
                   case ConnectionState.waiting:
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   case ConnectionState.active:
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   case ConnectionState.done:
@@ -226,17 +212,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Container(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) =>
+                                      ProductDetails(
+                                          "", snapshot.data!.docs[index]),));
+                              },
+                              child: Container(
 
-                              width: 290,
-                              height: 148,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: NetworkImage(snapshot.data?.docs[index]['image']),
-                                    fit: BoxFit.cover,
-                                  ),
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(20)
+                                width: 290,
+                                height: 148,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(snapshot.data?.docs[index]['image']),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(20)
+                                ),
                               ),
                             ),
                           );
@@ -259,22 +253,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-              future: FirebaseFirestore.instance.collection("products").where('cart_count', isGreaterThan: 10).get(),
+              future: FirebaseFirestore.instance.collection("products").where('cart_count', isGreaterThan: 10)
+                  .orderBy('cart_count',descending: true).get(),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
-                    return Text("none");
+                    return const Text("none");
                   case ConnectionState.waiting:
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   case ConnectionState.active:
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   case ConnectionState.done:
                     return GridView.builder(
-                      padding: EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: snapshot.data?.docs.length,
@@ -287,39 +282,44 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context,index){
                           return ClipRRect(
                             borderRadius:  BorderRadius.circular(15),
-                            child: Container(
-                              color: Colors.white,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Image.network(
-                                      snapshot.data?.docs[index]['image'],
-                                      fit: BoxFit.fill,width: double.maxFinite,
+                            child: InkWell(
+                              onTap: (){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetails("", snapshot.data!.docs[index]),));
+                              },
+                              child: Container(
+                                color: Colors.white,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: Image.network(
+                                        snapshot.data?.docs[index]['image'],
+                                        fit: BoxFit.fill,width: double.maxFinite,
+                                      ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text("${snapshot.data?.docs[index]['name']}",
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15
-                                          ),),
-                                        Text("${snapshot.data?.docs[index]['price']} LE",style:
-                                        const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xffA71E27),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text("${snapshot.data?.docs[index]['name']}",
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15
+                                            ),),
+                                          Text("${snapshot.data?.docs[index]['price']} LE",style:
+                                          const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xffA71E27),
 
-                                        ),),
-                                      ],
-                                    ),
-                                  )
-                                ],
+                                          ),),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           );

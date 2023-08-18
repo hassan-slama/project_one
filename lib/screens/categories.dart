@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:project_one/screens/home_screen.dart';
 
 import '../search.dart';
 import 'category_products.dart';
@@ -42,18 +41,19 @@ class _CategoriesState extends State<Categories> {
             switch(snapshot.connectionState){
 
               case ConnectionState.none:
-                return Text("none");
+                return const Text("none");
               case ConnectionState.waiting:
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               case ConnectionState.active:
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               case ConnectionState.done:
               return  GridView.builder(
-                padding: EdgeInsets.all(16),
+
+                padding: const EdgeInsets.all(16),
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data?.docs.length,
                   scrollDirection: Axis.vertical,
@@ -80,10 +80,9 @@ class _CategoriesState extends State<Categories> {
                         ),
                         child: Column(
                           children: [
-
                             Expanded(
                               child: ClipRRect(
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topRight: Radius.circular(20),
                                   topLeft: Radius.circular(20),
                                 ),
@@ -92,10 +91,10 @@ class _CategoriesState extends State<Categories> {
                                   fit: BoxFit.cover,),
                               ),
                             ),
-                            Container(
+                            SizedBox(
                               height: 30,
                               child: Text("${snapshot.data?.docs[index]['name']}",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold
                                   )),

@@ -5,8 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:project_one/screens/fav_screen.dart';
+// import 'package:project_one/screens/home_screen.dart';
 import 'package:project_one/screens/sign_in.dart';
+import 'package:project_one/screens/user_cart_screen.dart';
 
+import 'categories.dart';
 import 'edit_screen.dart';
 import 'models/user_model.dart';
 
@@ -32,21 +36,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
       uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) async{
         switch (taskSnapshot.state) {
           case TaskState.running:
-            final progress =
+            // final progress =
                 100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
-            print("Upload is $progress% complete.");
             break;
           case TaskState.paused:
-            print("Upload is paused.");
             break;
           case TaskState.canceled:
-            print("Upload was canceled");
             break;
           case TaskState.error:
-            print("Upload Error");
             break;
           case TaskState.success:
-            print("success ${await taskSnapshot.ref.getDownloadURL()}");
             //update fire store  image field
             FirebaseFirestore.instance.collection("users")
                 .doc(FirebaseAuth.instance.currentUser?.uid)
@@ -60,7 +59,6 @@ class _DrawerScreenState extends State<DrawerScreen> {
         }
       });
     }else{
-      print("no selected File");
     }
   }
   @override
@@ -83,21 +81,27 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     onTap: (){
                       pickImage();
                     },
-                    child:  CircleAvatar(
+                    child:
+                    widget.userModel.image!=""?
+                    CircleAvatar(
                       radius: 35,
                           backgroundImage: NetworkImage(widget.userModel.image??""),
-                    ),
+                    )
+                        :const CircleAvatar(
+                      radius: 35,
+                     child: Icon(Icons.person,size: 50,color: Colors.grey,),
+                    )
                   ),
 
                   Row(
                     children:  [
-                      Text(widget.userModel.name??"",style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                      Spacer(),
+                      Text(widget.userModel.name??"",style: const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
+                      const Spacer(),
                       InkWell(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => EditScreen(),));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const EditScreen(),));
                         },
-                        child: CircleAvatar(
+                        child: const CircleAvatar(
                           backgroundColor: Color(0xff6B1319),
                           radius: 20,
                           child: Icon(Icons.edit,color: Colors.white,size: 20,)
@@ -106,44 +110,64 @@ class _DrawerScreenState extends State<DrawerScreen> {
                       ),
                     ],
                   ),
-                   Text(widget.userModel.phone??"",style: TextStyle(
+                   Text(widget.userModel.phone??"",style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),)
                 ],
               ),),
-            const ListTile(
-              leading: Icon(Icons.home_outlined,color: Color(0xff707070),size: 32,),
-              title: Text("Home",style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const ListTile(
+                leading: Icon(Icons.home_outlined,color: Color(0xff707070),size: 32,),
+                title: Text("Home",style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),),
+              ),
             ),
-            const ListTile(
-              leading: Icon(Icons.category_outlined,color: Color(0xff707070),size: 32,),
-              title: Text("Categories",style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),),
+            InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const Categories(),));
+              },
+              child: const ListTile(
+                leading: Icon(Icons.category_outlined,color: Color(0xff707070),size: 32,),
+                title: Text("Categories",style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),),
+              ),
             ),
-            const ListTile(
-              leading: Icon(Icons.favorite_border,color: Color(0xff707070),size: 32,),
-              title: Text("Like",style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),),
+            InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const FavScreen(),));
+              },
+              child: const ListTile(
+                leading: Icon(Icons.favorite_border,color: Color(0xff707070),size: 32,),
+                title: Text("Favourites",style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),),
+              ),
             ),
-            const ListTile(
-              leading: Icon(Icons.shopping_cart_outlined,color: Color(0xff707070),size: 32,),
-              title: Text("Home",style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),),
+            InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const UserCart(),));
+              },
+              child: const ListTile(
+                leading: Icon(Icons.shopping_cart_outlined,color: Color(0xff707070),size: 32,),
+                title: Text("Cart",style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),),
+              ),
             ),
             const ListTile(
               leading: Icon(Icons.language_outlined,color: Color(0xff707070),size: 32,),
@@ -158,7 +182,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 await FirebaseAuth.instance.signOut().then((value) {
                   Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => SignIn(),),
+                      MaterialPageRoute(builder: (context) => const SignIn(),),
                           (route) => false);
                 });
               },

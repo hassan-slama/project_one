@@ -84,7 +84,8 @@ class _CategoryProductsState extends State<CategoryProducts> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (builder) => ProductDetails(widget.categoryName
+                            builder: (builder) => ProductDetails(
+                                widget.categoryName
                                 ,snapshot.data!.docs[index]),
                           ),
                         );
