@@ -1,15 +1,17 @@
-import 'dart:convert';
-import 'dart:developer';
+// import 'dart:convert';
+// import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:http/http.dart' as http;
-import 'package:project_one/screens/servicies/firebase_auth.dart';
+// import 'package:http/http.dart' as http;
+import 'package:project_one/business_logic_layer/auth_cubit/sign_up_cubit.dart';
+// import 'package:project_one/screens/servicies/firebase_auth.dart';
 
-import 'home_screen.dart';
-import 'otp_screen.dart';
+// import 'home_screen.dart';
+// import 'otp_screen.dart';
 
 
 class SignUp extends StatefulWidget {
@@ -47,14 +49,14 @@ class _SignUpState extends State<SignUp> {
                  onTap: (){
                    Navigator.pop(context);
                  },
-                 child: Icon(Icons.arrow_back,color: Colors.black,size: 40,),
+                 child: const Icon(Icons.arrow_back,color: Colors.black,size: 40,),
                 ),
                 const SizedBox(
                   height: 30,
                 ),
-                Container(
+                const SizedBox(
                     width: 100,
-                    child: const Text(
+                    child: Text(
                       "Sign Up",
                       style: TextStyle(
                         color: Colors.black,
@@ -66,14 +68,14 @@ class _SignUpState extends State<SignUp> {
                   height: 40,
                 ),
 
-                errorMessage != null? Text("$errorMessage",style: TextStyle(fontSize: 20,color: Colors.red),)
-                    :SizedBox(),
-                SizedBox(height: 20,),
+                errorMessage != null? Text("$errorMessage",style: const TextStyle(fontSize: 20,color: Colors.red),)
+                    :const SizedBox(),
+                const SizedBox(height: 20,),
                 TextField(
                   controller: _nameController,
                     decoration: InputDecoration(
                       hintText: "Name",
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 25,
                       ),
@@ -98,7 +100,7 @@ class _SignUpState extends State<SignUp> {
                     decoration: InputDecoration(
                       hintText: "Email",
                       labelText: "Email",
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 25,
                       ),
@@ -122,7 +124,7 @@ class _SignUpState extends State<SignUp> {
                     decoration: InputDecoration(
                       hintText: "Phone",
                       labelText: "Phone",
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 25,
                       ),
@@ -147,7 +149,7 @@ class _SignUpState extends State<SignUp> {
                     decoration: InputDecoration(
                       labelText: "Password",
                       hintText: "Password",
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 25,
                       ),
@@ -174,7 +176,7 @@ class _SignUpState extends State<SignUp> {
                     decoration: InputDecoration(
                       labelText: "Confirm Password",
                       hintText: "Confirm Password",
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 25,
                       ),
@@ -209,142 +211,125 @@ class _SignUpState extends State<SignUp> {
                       //   )
                       // ]
                     ),
-                  child:  Row(
+                  child:
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      isLoading
-                          ?
-                      CircularProgressIndicator()
-                          :
-                      InkWell(
-                        onTap: ()async{
-                          setState(() {
-                            isLoading = true;
-                          });
-                          FirebaseAuthService.SignUp(
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                            phone: _phoneController.text,
-                            name: _nameController.text
-                          )
-                              .then(
+                      BlocBuilder<SignUpCubit,SignUpState>(
+                          builder: (context, state) {
+                            return state is SignUpLoading
+                                ?
+                            const CircularProgressIndicator()
+                                :
+                            InkWell(
+                              onTap: (){
 
-                                  (credential){
-                                    FirebaseFirestore.instance.collection("users").doc(credential.user?.uid);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(
-                                            builder: (builder)=>HomeScreen()
-
-                                        ));
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                  },
-                            onError: (error){
-                                    if(error is FirebaseAuthException){
-                                      errorMessage = error.code;
-                                    }else{
-                                      errorMessage = error.toString();
-                                    }
-                                    setState(() {});
-                            }
+                           BlocProvider.of<SignUpCubit>(context).signUp(
+                               _emailController.text,
+                               _passwordController.text,
+                               _phoneController.text,
+                               _nameController.text,
+                               context);
 
 
-                          );
 
-                        },
-                        // onTap: ()async{
-                        //   isLoading =true;
-                        //   setState(() {});
-                        //   //call register api
-                        //   // prepare uri
-                        //   final uri = Uri.parse("https://v-mesta.com/api/sign-up");
-                        //   //initialize request
-                        //   var request = http.Request('POST',uri);
-                        //   // adding encoded json to the request body
-                        //   final body = json.encode({
-                        //     "name": _nameController.text,
-                        //     "country_code":966 ,
-                        //     "phone":_phoneController.text ,
-                        //     "email": _emailController.text,
-                        //     "password": _passwordController.text,
-                        //     "password_confirmation": _confirmPasswordController.text,
-                        //     "d_o_b": '13-10-2001',
-                        //   });
-                        //   print("request body is ::: $body");
-                        //   request.body = body;
-                        //   // adding headers to accept json format
-                        //   request.headers.addAll({
-                        //     "Content-Type": "application/json",
-                        //   });
-                        //   // send the request to the server
-                        //   var response = await request.send();
-                        //   // logging the status code
-                        //   log(response.statusCode.toString(),name: "status code");
-                        //   // check if the status code success
-                        //   if (response.statusCode == 200) {
-                        //     // receive the response body
-                        //     String responseBody = await response.stream.bytesToString();
-                        //     // logging response body
-                        //     log(responseBody,name: "response body");
-                        //     // decode response body to Map
-                        //     final decodedBody = json.decode(responseBody);
-                        //     log(decodedBody.toString(),name: " decoded response body");
-                        //     isLoading =false;
-                        //     setState(() {});
-                        //     if(decodedBody['key']=="needActive"){
-                        //       Navigator.push(context,
-                        //           MaterialPageRoute(
-                        //               builder: (builder)=>OtpScreen(
-                        //                 email:_emailController.text,
-                        //               )
-                        //           ));
-                        //       // handle error stat
-                        //     } else if(decodedBody['key']=="fail"){
-                        //       showDialog(
-                        //           context: context,
-                        //           // barrierDismissible: false,
-                        //           builder: (ctx){
-                        //             return AlertDialog(
-                        //               title: Text("Error!"),
-                        //               content: Text(
-                        //                 decodedBody['msg'].toString(),
-                        //               ),
-                        //             );
-                        //           }
-                        //       );
-                        //
-                        //     }else{
-                        //       print("error");
-                        //     }
-                        //   }
-                        //   // navigate to otp screen
-                        // },
-                        child: Container(
-                          height: 44,
-                          width: 101,
-                          decoration: BoxDecoration(
-                            color:Color(0xffA71E27),
-                            borderRadius: BorderRadius.circular(22),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0xffA71E27),
-                                blurRadius: 5.0, // soften the shadow
-                                spreadRadius: 1.0, //extend the shadow
-                              )
-                            ],
-                          ),
-                          child: Center(
-                            child: Text('SIGN UP',
-                              style: TextStyle(
-                                fontSize: 17.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white ,
+
+                              },
+                              // onTap: ()async{
+                              //   isLoading =true;
+                              //   setState(() {});
+                              //   //call register api
+                              //   // prepare uri
+                              //   final uri = Uri.parse("https://v-mesta.com/api/sign-up");
+                              //   //initialize request
+                              //   var request = http.Request('POST',uri);
+                              //   // adding encoded json to the request body
+                              //   final body = json.encode({
+                              //     "name": _nameController.text,
+                              //     "country_code":966 ,
+                              //     "phone":_phoneController.text ,
+                              //     "email": _emailController.text,
+                              //     "password": _passwordController.text,
+                              //     "password_confirmation": _confirmPasswordController.text,
+                              //     "d_o_b": '13-10-2001',
+                              //   });
+                              //   print("request body is ::: $body");
+                              //   request.body = body;
+                              //   // adding headers to accept json format
+                              //   request.headers.addAll({
+                              //     "Content-Type": "application/json",
+                              //   });
+                              //   // send the request to the server
+                              //   var response = await request.send();
+                              //   // logging the status code
+                              //   log(response.statusCode.toString(),name: "status code");
+                              //   // check if the status code success
+                              //   if (response.statusCode == 200) {
+                              //     // receive the response body
+                              //     String responseBody = await response.stream.bytesToString();
+                              //     // logging response body
+                              //     log(responseBody,name: "response body");
+                              //     // decode response body to Map
+                              //     final decodedBody = json.decode(responseBody);
+                              //     log(decodedBody.toString(),name: " decoded response body");
+                              //     isLoading =false;
+                              //     setState(() {});
+                              //     if(decodedBody['key']=="needActive"){
+                              //       Navigator.push(context,
+                              //           MaterialPageRoute(
+                              //               builder: (builder)=>OtpScreen(
+                              //                 email:_emailController.text,
+                              //               )
+                              //           ));
+                              //       // handle error stat
+                              //     } else if(decodedBody['key']=="fail"){
+                              //       showDialog(
+                              //           context: context,
+                              //           // barrierDismissible: false,
+                              //           builder: (ctx){
+                              //             return AlertDialog(
+                              //               title: Text("Error!"),
+                              //               content: Text(
+                              //                 decodedBody['msg'].toString(),
+                              //               ),
+                              //             );
+                              //           }
+                              //       );
+                              //
+                              //     }else{
+                              //       print("error");
+                              //     }
+                              //   }
+                              //   // navigate to otp screen
+                              // },
+                              child: Container(
+                                height: 44,
+                                width: 101,
+                                decoration: BoxDecoration(
+                                  color:const Color(0xffA71E27),
+                                  borderRadius: BorderRadius.circular(22),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0xffA71E27),
+                                      blurRadius: 5.0, // soften the shadow
+                                      spreadRadius: 1.0, //extend the shadow
+                                    )
+                                  ],
+                                ),
+                                child: const Center(
+                                  child: Text('SIGN UP',
+                                    style: TextStyle(
+                                      fontSize: 17.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white ,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
+                            );
+                          },
                       ),
+
                     ],
                   ),
                 ),

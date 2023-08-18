@@ -6,25 +6,25 @@ import 'package:flutter/material.dart';
 // import '../../screens/home_screen.dart';
 import '../../screens/servicies/firebase_auth.dart';
 
-part 'auth_state.dart';
+part 'sign_in_state.dart';
 
-class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(AuthInitial());
+class SignInCubit extends Cubit<SignInState> {
+  SignInCubit() : super(SignInInitial());
 void signIn(String email, String password, BuildContext context) {
   if(email.isEmpty||password.isEmpty){
-    emit(AuthErrorState('Invalid Email Or Password'));
+    emit(const SignInErrorState('Invalid Email Or Password'));
   }else{
-    emit(AuthLoadingState());
+    emit(SignInLoadingState());
     FirebaseAuthService.SignIn(email: email, password: password)
         .then(
             (credential) {
-         emit(AuthSuccessState());
+         emit(SignInSuccessState());
         },
         onError: (error) {
           if (error is FirebaseAuthException) {
-            emit(AuthErrorState(error.code));
+            emit(SignInErrorState(error.code));
           } else {
-            emit(AuthErrorState(error.toString()));
+            emit(SignInErrorState(error.toString()));
           }
 
 

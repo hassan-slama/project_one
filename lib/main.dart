@@ -2,10 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project_one/business_logic_layer/auth_cubit/auth_cubit.dart';
+import 'package:project_one/business_logic_layer/auth_cubit/sign_in_cubit.dart';
 // import 'package:project_one/screens/change_password.dart';
 import 'package:project_one/screens/home_screen.dart';
 import 'package:project_one/screens/sign_in.dart';
+
+import 'business_logic_layer/auth_cubit/sign_up_cubit.dart';
 // import 'package:project_one/screens/sign_up.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 bool isLoggedIn = false;
@@ -19,8 +21,11 @@ void main() async{
 
   runApp( MultiBlocProvider(
     providers: [
-      BlocProvider<AuthCubit>(
-        create: (BuildContext context) => AuthCubit(),
+      BlocProvider<SignInCubit>(
+        create: (BuildContext context) => SignInCubit(),
+      ),
+      BlocProvider<SignUpCubit>(
+        create: (BuildContext context) => SignUpCubit(),
       ),
 
     ],

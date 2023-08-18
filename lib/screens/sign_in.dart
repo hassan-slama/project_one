@@ -3,7 +3,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:project_one/business_logic_layer/auth_cubit/auth_cubit.dart';
+import 'package:project_one/business_logic_layer/auth_cubit/sign_in_cubit.dart';
 import 'package:project_one/screens/change_password_confirmation.dart';
 // import 'package:project_one/screens/servicies/firebase_auth.dart';
 import 'package:project_one/screens/sign_up.dart';
@@ -27,7 +27,7 @@ class SignIn extends StatefulWidget {
 
 }
 class _SignInState extends State<SignIn>{
-  bool isobsecured = true;
+  bool isObscured = true;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 @override
@@ -41,9 +41,9 @@ class _SignInState extends State<SignIn>{
       //   backgroundColor: Colors.white,
       // ),
       body:
-      BlocListener<AuthCubit, AuthState>(
+      BlocListener<SignInCubit, SignInState>(
   listener: (context, state) {
-    if(state is AuthSuccessState){
+    if(state is SignInSuccessState){
       Navigator.pushAndRemoveUntil(context,
           MaterialPageRoute(
               builder: (builder) => const HomeScreen()
@@ -71,9 +71,9 @@ class _SignInState extends State<SignIn>{
             const SizedBox(
               height: 40,
             ),
-            BlocBuilder<AuthCubit,AuthState>(
+            BlocBuilder<SignInCubit,SignInState>(
                 builder:  (context, state) {
-                  return state is AuthErrorState
+                  return state is SignInErrorState
                   ?
                  Text(state.errmsg,style: const TextStyle(fontSize: 20,color: Colors.red),)
                       :
@@ -109,13 +109,13 @@ class _SignInState extends State<SignIn>{
             ),
             TextField(
               controller: _passwordController,
-              obscureText: isobsecured,
+              obscureText: isObscured,
               decoration: InputDecoration(
                 suffixIcon:  IconButton(
-                  icon: isobsecured?const Icon(Icons.visibility_off):const Icon(Icons.visibility),
+                  icon: isObscured?const Icon(Icons.visibility_off):const Icon(Icons.visibility),
                   onPressed: () {
                     setState(() {
-                      isobsecured =!isobsecured;
+                      isObscured =!isObscured;
                     });
                   },
                 ),
@@ -159,10 +159,10 @@ class _SignInState extends State<SignIn>{
             const SizedBox(
               height: 20,
             ),
-            BlocBuilder<AuthCubit,AuthState>(
+            BlocBuilder<SignInCubit,SignInState>(
                 builder: (context, state) {
                   print('current state is${state}');
-                 return state is AuthLoadingState
+                 return state is SignInLoadingState
                       ?
                   const CircularProgressIndicator()
                       :
@@ -183,7 +183,7 @@ class _SignInState extends State<SignIn>{
 
                     InkWell(
                         onTap: (){
-                     BlocProvider.of<AuthCubit>(context).signIn(
+                     BlocProvider.of<SignInCubit>(context).signIn(
                          _emailController.text,
                          _passwordController.text,
                          context);
